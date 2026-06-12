@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import me from "./images/me.jpg";
 import BeU from "./images/BeU.png";
 import AI_Image_Generator from "./images/AI-Image-Generator.png";
 
@@ -325,7 +326,7 @@ function Hero() {
             }}
           >
             <img
-              src="../images/me.jpg"
+              src="./images/me.jpg"
               alt="Profile"
               className="profile-photo"
               style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(100%)", transition: "filter 0.4s ease" }}
