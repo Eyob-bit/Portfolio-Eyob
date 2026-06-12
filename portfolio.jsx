@@ -326,7 +326,7 @@ function Hero() {
             }}
           >
             <img
-              src="./images/me.jpg"
+              src={me}
               alt="Profile"
               className="profile-photo"
               style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(100%)", transition: "filter 0.4s ease" }}
