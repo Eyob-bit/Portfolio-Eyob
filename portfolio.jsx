@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import me from "./images/me.jpg";
 import BeU from "./images/BeU.png";
 import AI_Image_Generator from "./images/AI-Image-Generator.png";
@@ -112,114 +112,271 @@ function Circle({ size = 80, filled = true, style = {} }) {
   );
 }
 
+// --- Hamburger Menu Icon ---
+function HamburgerIcon({ open }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+      {open ? (
+        <>
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </>
+      ) : (
+        <>
+          <line x1="3" y1="7" x2="21" y2="7" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="17" x2="21" y2="17" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 // --- Navbar ---
 function Navbar({ dark, toggleDark, isMobile }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [menuOpen]);
+
+  // Close menu on nav link click
+  const handleNavClick = () => setMenuOpen(false);
+
   return (
     <nav
+      ref={menuRef}
       style={{
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         zIndex: 100,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: isMobile ? "0 12px" : "0 40px",
-        height: 64,
         background: "var(--bg)",
         borderBottom: "1px solid var(--border)",
         transition: "background 0.3s",
       }}
     >
-      <a
-        href="#home"
-        style={{ textDecoration: "none" }}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: isMobile ? "0 16px" : "0 40px",
+          height: 64,
+        }}
       >
-        <span style={{ fontWeight: 800, fontSize: 22, color: "var(--text)", letterSpacing: -0.5, cursor: "pointer" }}>
-          Eyob<span style={{ color: "var(--accent)" }}>.</span>
-        </span>
-      </a>
-      <div style={{ display: "flex", gap: 6, background: "var(--pill-bg)", borderRadius: 50, padding: "6px 12px" }}>
-        {NAV_LINKS.map((link) => (
-          <a
-            key={link}
-            href={`#${link.toLowerCase()}`}
+        {/* Logo */}
+        <a href="#home" style={{ textDecoration: "none" }}>
+          <span style={{ fontWeight: 800, fontSize: 22, color: "var(--text)", letterSpacing: -0.5, cursor: "pointer" }}>
+            Eyob<span style={{ color: "var(--accent)" }}>.</span>
+          </span>
+        </a>
+
+        {/* Desktop nav links */}
+        {!isMobile && (
+          <div style={{ display: "flex", gap: 6, background: "var(--pill-bg)", borderRadius: 50, padding: "6px 12px" }}>
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link}
+                href={`#${link.toLowerCase()}`}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: 50,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "var(--text)",
+                  textDecoration: "none",
+                  transition: "background 0.2s",
+                }}
+                onMouseEnter={(e) => (e.target.style.background = "var(--hover)")}
+                onMouseLeave={(e) => (e.target.style.background = "transparent")}
+              >
+                {link}
+              </a>
+            ))}
+          </div>
+        )}
+
+        {/* Right side controls */}
+        <div style={{ display: "flex", gap: isMobile ? 8 : 12, alignItems: "center" }}>
+          {/* Download CV — hide on mobile (shown in hero) */}
+          {!isMobile && (
+            <a
+              href="/Eyob_Behailu_CV1.pdf"
+              download="Eyob_CV.pdf"
+              className="glow-btn"
+              style={{
+                background: "var(--accent)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 50,
+                padding: "10px 20px",
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+                textDecoration: "none",
+                display: "inline-block",
+              }}
+            >
+              Download CV
+            </a>
+          )}
+
+          {/* Coffee button — hide on mobile (shown as floating FAB) */}
+          {!isMobile && (
+            <a
+              href="https://jami.bio/eyobed40/tip"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shine-btn glow-btn"
+              style={{
+                background: "var(--accent)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 50,
+                padding: "10px 20px",
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                position: "relative",
+                overflow: "hidden",
+                textDecoration: "none",
+              }}
+            >
+              ☕ Buy me a coffee
+            </a>
+          )}
+
+          {/* Dark mode toggle */}
+          <button
+            onClick={toggleDark}
             style={{
-              padding: "6px 14px",
-              borderRadius: 50,
-              fontSize: 14,
-              fontWeight: 500,
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              fontSize: 20,
               color: "var(--text)",
-              textDecoration: "none",
-              transition: "background 0.2s",
+              padding: 4,
+              lineHeight: 1,
             }}
-            onMouseEnter={(e) => (e.target.style.background = "var(--hover)")}
-            onMouseLeave={(e) => (e.target.style.background = "transparent")}
+            title="Toggle dark mode"
           >
-            {link}
-          </a>
-        ))}
+            {dark ? "☀️" : "🌙"}
+          </button>
+
+          {/* Hamburger — mobile only */}
+          {isMobile && (
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--text)",
+                padding: 4,
+                display: "flex",
+                alignItems: "center",
+              }}
+              aria-label="Toggle menu"
+            >
+              <HamburgerIcon open={menuOpen} />
+            </button>
+          )}
+        </div>
       </div>
-      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-        <a
-          href="/Eyob_Behailu_CV1.pdf"
-          download="Eyob_CV.pdf"
-          className="glow-btn"
+
+      {/* Mobile dropdown menu */}
+      {isMobile && menuOpen && (
+        <div
           style={{
-            background: "var(--accent)",
-            color: "#fff",
-            border: "none",
-            borderRadius: 50,
-            padding: "10px 20px",
-            fontWeight: 600,
-            fontSize: 14,
-            cursor: "pointer",
-            textDecoration: "none",
-            display: "inline-block",
-          }}
-        >
-          Download CV
-        </a>
-        <a
-          href="https://jami.bio/eyobed40/tip"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shine-btn glow-btn"
-          style={{
-            background: "var(--accent)",
-            color: "#fff",
-            border: "none",
-            borderRadius: 50,
-            padding: "10px 20px",
-            fontWeight: 600,
-            fontSize: 14,
-            cursor: "pointer",
+            background: "var(--bg)",
+            borderTop: "1px solid var(--border)",
+            padding: "16px 20px 20px",
             display: "flex",
-            alignItems: "center",
-            gap: 6,
-            position: "relative",
-            overflow: "hidden",
-            textDecoration: "none",
+            flexDirection: "column",
+            gap: 4,
           }}
         >
-          ☕ Buy me a coffee
-        </a>
-        <button
-          onClick={toggleDark}
-          style={{
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            fontSize: 20,
-            color: "var(--text)",
-            padding: 4,
-          }}
-          title="Toggle dark mode"
-        >
-          {dark ? "☀️" : "🌙"}
-        </button>
-      </div>
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link}
+              href={`#${link.toLowerCase()}`}
+              onClick={handleNavClick}
+              style={{
+                padding: "12px 16px",
+                borderRadius: 12,
+                fontSize: 15,
+                fontWeight: 500,
+                color: "var(--text)",
+                textDecoration: "none",
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              {link}
+            </a>
+          ))}
+          <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
+            <a
+              href="/Eyob_Behailu_CV1.pdf"
+              download="Eyob_CV.pdf"
+              onClick={handleNavClick}
+              className="glow-btn"
+              style={{
+                flex: 1,
+                background: "var(--accent)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 50,
+                padding: "12px 0",
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+                textDecoration: "none",
+                textAlign: "center",
+              }}
+            >
+              Download CV
+            </a>
+            <a
+              href="https://jami.bio/eyobed40/tip"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleNavClick}
+              className="glow-btn"
+              style={{
+                flex: 1,
+                background: "var(--accent)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 50,
+                padding: "12px 0",
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+                textDecoration: "none",
+                textAlign: "center",
+              }}
+            >
+              ☕ Coffee
+            </a>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
@@ -234,33 +391,49 @@ function Hero({ isMobile }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: isMobile ? "100px 20px 40px" : "80px 80px 40px",
+        padding: isMobile ? "90px 20px 60px" : "80px 80px 40px",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      <div style={{ position: "absolute", top: 80, left: 20 }}>
-        <Diamond size={72} filled />
-      </div>
-      <div style={{ position: "absolute", bottom: 60, left: 80 }}>
-        <Diamond size={72} filled={false} />
-      </div>
-      <div style={{ position: "absolute", bottom: 40, right: 60 }}>
-        <Circle size={110} filled />
-      </div>
+      {/* Decorative shapes — hide on very small screens */}
+      {!isMobile && (
+        <>
+          <div style={{ position: "absolute", top: 80, left: 20 }}>
+            <Diamond size={72} filled />
+          </div>
+          <div style={{ position: "absolute", bottom: 60, left: 80 }}>
+            <Diamond size={72} filled={false} />
+          </div>
+          <div style={{ position: "absolute", bottom: 40, right: 60 }}>
+            <Circle size={110} filled />
+          </div>
+        </>
+      )}
 
-      <div style={{ display: "flex", flexDirection: isMobile ? "column-reverse" : "row", alignItems: "center", justifyContent: "space-between", maxWidth: 1100, width: "100%", gap: 32 }}>
-        <div style={{ flex: 1 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          maxWidth: 1100,
+          width: "100%",
+          gap: isMobile ? 40 : 32,
+        }}
+      >
+        {/* Text content */}
+        <div style={{ flex: 1, textAlign: isMobile ? "center" : "left" }}>
           <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>
             Welcome to my Portfolio
           </p>
-          <h1 style={{ fontSize: "clamp(48px, 6vw, 76px)", fontWeight: 800, lineHeight: 1.1, color: "var(--text)", margin: "0 0 20px" }}>
+          <h1 style={{ fontSize: isMobile ? "clamp(36px, 10vw, 56px)" : "clamp(48px, 6vw, 76px)", fontWeight: 800, lineHeight: 1.1, color: "var(--text)", margin: "0 0 20px" }}>
             I'm a <span style={{ color: "var(--accent)" }}>Software</span> Developer
           </h1>
-          <p style={{ fontSize: 16, color: "var(--subtext)", lineHeight: 1.7, maxWidth: 420, marginBottom: 36 }}>
+          <p style={{ fontSize: 16, color: "var(--subtext)", lineHeight: 1.7, maxWidth: isMobile ? "100%" : 420, marginBottom: 36, margin: isMobile ? "0 auto 36px" : "0 0 36px" }}>
             Full-Stack Web Developer and Computer Science student at Haramaya University.
           </p>
-          <div style={{ display: "flex", gap: 16 }}>
+          <div style={{ display: "flex", gap: 16, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
             <a
               href="#contact"
               className="glow-btn"
@@ -301,17 +474,29 @@ function Hero({ isMobile }) {
           </div>
         </div>
 
-        <div style={{ position: "relative", width: 400, height: 440, flexShrink: 0 }}>
-          <div style={{ position: "absolute", top: -10, right: -20 }}>
-            <Circle size={90} filled />
-          </div>
-          <div style={{ position: "absolute", bottom: 10, left: -30 }}>
-            <Circle size={64} filled={false} style={{ border: "2.5px solid var(--accent)" }} />
-          </div>
+        {/* Profile image */}
+        <div
+          style={{
+            position: "relative",
+            width: isMobile ? 260 : 400,
+            height: isMobile ? 280 : 440,
+            flexShrink: 0,
+          }}
+        >
+          {!isMobile && (
+            <>
+              <div style={{ position: "absolute", top: -10, right: -20 }}>
+                <Circle size={90} filled />
+              </div>
+              <div style={{ position: "absolute", bottom: 10, left: -30 }}>
+                <Circle size={64} filled={false} style={{ border: "2.5px solid var(--accent)" }} />
+              </div>
+            </>
+          )}
           <div
             style={{
-              width: 340,
-              height: 370,
+              width: isMobile ? 220 : 340,
+              height: isMobile ? 240 : 370,
               borderRadius: "50%",
               border: "3px solid var(--border-strong)",
               overflow: "hidden",
@@ -342,6 +527,7 @@ function Hero({ isMobile }) {
         </div>
       </div>
 
+      {/* Scroll indicator */}
       <div
         style={{
           position: "absolute",
@@ -388,14 +574,23 @@ function About({ isMobile }) {
   ];
   return (
     <section id="about" style={{ padding: isMobile ? "80px 20px" : "100px 80px", background: "var(--section-alt)" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 40 : 80,
+          alignItems: isMobile ? "stretch" : "center",
+        }}
+      >
         <div style={{ flex: 1 }}>
           <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>About Me</p>
-          <h2 style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 20 }}>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 20 }}>
             Passionate about crafting great software
           </h2>
           <p style={{ color: "var(--subtext)", lineHeight: 1.8, fontSize: 15, marginBottom: 16 }}>
-            I’m a Full-Stack Developer dedicated to building clean, scalable web applications that deliver great user experiences. Specializing in React, Node.js, and Laravel, I bridge the gap between intuitive front-end design and robust, secure back-end architecture.
+            I'm a Full-Stack Developer dedicated to building clean, scalable web applications that deliver great user experiences. Specializing in React, Node.js, and Laravel, I bridge the gap between intuitive front-end design and robust, secure back-end architecture.
           </p>
           <p style={{ color: "var(--subtext)", lineHeight: 1.8, fontSize: 15, marginBottom: 36 }}>
             I approach development with an analytical mindset, focusing on writing optimized code and creating efficient database structures that solve real-world problems.
@@ -420,7 +615,7 @@ function About({ isMobile }) {
             Download CV
           </a>
         </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 24 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
           {stats.map((s) => (
             <div
               key={s.label}
@@ -455,13 +650,13 @@ function Services({ isMobile }) {
     <section id="services" style={{ padding: isMobile ? "80px 20px" : "100px 80px", background: "var(--section-alt)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>What I Offer</p>
-        <h2 style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 56 }}>Services</h2>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 24 }}>
+        <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 40 }}>Services</h2>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 20 }}>
           {services.map((s) => (
             <div
               key={s.title}
               style={{
-                padding: "36px 32px",
+                padding: isMobile ? "28px 24px" : "36px 32px",
                 borderRadius: 20,
                 background: "var(--card-bg)",
                 border: "1px solid var(--border)",
@@ -491,28 +686,28 @@ function Services({ isMobile }) {
 // --- Portfolio Section ---
 function Portfolio({ isMobile }) {
   const projects = [
-  {
-    title: "BeU Delivery - Food Delivery Platform",
-    tech: "HTML · CSS · JavaScript · PHP · MySql",
-    desc: "Full-stack PHP/MySQL food delivery app featuring multi-role access control.",
-    github: "https://github.com/Eyob-bit/BeU",
-    live: "#",
-    image: BeU,
-  },
-  {
-    title: "AI-Image-Generator",
-    tech: "HTML · CSS · JavaScript",
-    desc: "Responsive AI Image Generator UI.",
-    github: "https://github.com/Eyob-bit/AI-Image-Generator",
-    live: "https://ai-image-generator-seven-mu.vercel.app/",
-    image: AI_Image_Generator,
-  },
-];
+    {
+      title: "BeU Delivery - Food Delivery Platform",
+      tech: "HTML · CSS · JavaScript · PHP · MySql",
+      desc: "Full-stack PHP/MySQL food delivery app featuring multi-role access control.",
+      github: "https://github.com/Eyob-bit/BeU",
+      live: "#",
+      image: BeU,
+    },
+    {
+      title: "AI-Image-Generator",
+      tech: "HTML · CSS · JavaScript",
+      desc: "Responsive AI Image Generator UI.",
+      github: "https://github.com/Eyob-bit/AI-Image-Generator",
+      live: "https://ai-image-generator-seven-mu.vercel.app/",
+      image: AI_Image_Generator,
+    },
+  ];
   return (
-    <section id="portfolio" style={{ padding: "100px 80px" }}>
+    <section id="portfolio" style={{ padding: isMobile ? "80px 20px" : "100px 80px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>My Work</p>
-        <h2 style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 56 }}>Portfolio</h2>
+        <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 40 }}>Portfolio</h2>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 24 }}>
           {projects.map((p) => (
             <div
@@ -533,24 +728,14 @@ function Portfolio({ isMobile }) {
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              <div
-  style={{
-    height: 220,
-    overflow: "hidden",
-  }}
->
-  <img
-    src={p.image}
-    alt={p.title}
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      transition: "transform 0.3s ease",
-    }}
-  />
-</div>
-              <div style={{ padding: "24px" }}>
+              <div style={{ height: isMobile ? 180 : 220, overflow: "hidden" }}>
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s ease" }}
+                />
+              </div>
+              <div style={{ padding: isMobile ? "20px" : "24px" }}>
                 <p style={{ color: "var(--accent)", fontWeight: 600, fontSize: 12, letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{p.tech}</p>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 10 }}>{p.title}</h3>
                 <p style={{ color: "var(--subtext)", lineHeight: 1.6, fontSize: 14, marginBottom: 20 }}>{p.desc}</p>
@@ -617,20 +802,20 @@ function Portfolio({ isMobile }) {
   );
 }
 
-// --- Contact Section (redesigned like screenshot) ---
+// --- Contact Section ---
 function Contact({ isMobile }) {
   return (
     <section id="contact" style={{ padding: isMobile ? "80px 20px" : "100px 80px", background: "var(--section-alt)" }}>
       <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: "clamp(36px, 5vw, 60px)", fontWeight: 800, color: "var(--text)", marginBottom: 16 }}>
+        <h2 style={{ fontSize: isMobile ? "clamp(28px, 8vw, 48px)" : "clamp(36px, 5vw, 60px)", fontWeight: 800, color: "var(--text)", marginBottom: 16 }}>
           Let's Work Together
         </h2>
-        <p style={{ color: "var(--subtext)", fontSize: 16, lineHeight: 1.7, marginBottom: 56 }}>
+        <p style={{ color: "var(--subtext)", fontSize: 16, lineHeight: 1.7, marginBottom: 48 }}>
           Feel free to contact me for any project or collaboration
         </p>
 
         {/* Social icons grid */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 24, flexWrap: "wrap", marginBottom: 64 }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 16 : 24, flexWrap: "wrap", marginBottom: 56 }}>
           {SOCIAL_LINKS.map((s) => (
             <a
               key={s.name}
@@ -641,15 +826,15 @@ function Contact({ isMobile }) {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: 10,
+                gap: 8,
                 textDecoration: "none",
               }}
             >
               <div
                 className="social-icon-btn"
                 style={{
-                  width: 56,
-                  height: 56,
+                  width: isMobile ? 48 : 56,
+                  height: isMobile ? 48 : 56,
                   borderRadius: "50%",
                   background: s.bg,
                   color: "#fff",
@@ -671,12 +856,11 @@ function Contact({ isMobile }) {
               >
                 {s.icon}
               </div>
-              <span style={{ color: "var(--subtext)", fontSize: 12, fontWeight: 500 }}>{s.name}</span>
+              <span style={{ color: "var(--subtext)", fontSize: 11, fontWeight: 500 }}>{s.name}</span>
             </a>
           ))}
         </div>
 
-        {/* Divider */}
         <div style={{ borderTop: "1px solid var(--border)", paddingTop: 36 }}>
           <p style={{ color: "var(--subtext)", fontSize: 14 }}>© 2026 Eyob Behailu. All Rights Reserved.</p>
         </div>
@@ -690,7 +874,7 @@ function Footer({ isMobile }) {
   return (
     <footer
       style={{
-        padding: "48px 80px 32px",
+        padding: isMobile ? "36px 20px 100px" : "48px 80px 32px",
         borderTop: "1px solid var(--border)",
         display: "flex",
         flexDirection: "column",
@@ -704,8 +888,8 @@ function Footer({ isMobile }) {
           Eyob<span style={{ color: "var(--accent)" }}>.</span>
         </span>
       </a>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--subtext)", fontSize: 14 }}>
-        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style={{ opacity: 0.6 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--subtext)", fontSize: 14, flexWrap: "wrap", justifyContent: "center", textAlign: "center" }}>
+        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style={{ opacity: 0.6, flexShrink: 0 }}>
           <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
         </svg>
         eyobbehailu33@gmail.com
@@ -726,7 +910,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // Set favicon to profile photo
     const link = document.querySelector("link[rel~='icon']") || document.createElement("link");
     link.type = "image/jpeg";
     link.rel = "icon";
@@ -777,6 +960,7 @@ export default function App() {
     >
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
         @keyframes scrollBounce {
           0%, 100% { transform: translateY(0); opacity: 1; }
           50% { transform: translateY(6px); opacity: 0.4; }
@@ -820,6 +1004,14 @@ export default function App() {
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        /* Prevent horizontal scroll on mobile */
+        body { overflow-x: hidden; }
+
+        /* Touch-friendly tap targets */
+        @media (max-width: 768px) {
+          a, button { -webkit-tap-highlight-color: transparent; }
+        }
       `}</style>
       <Navbar dark={dark} isMobile={isMobile} toggleDark={() => setDark(!dark)} />
       <Hero isMobile={isMobile} />
@@ -828,6 +1020,7 @@ export default function App() {
       <Portfolio isMobile={isMobile} />
       <Contact isMobile={isMobile} />
       <Footer isMobile={isMobile} />
+
       {/* Floating coffee button */}
       <a
         href="https://jami.bio/eyobed40/tip"
@@ -836,26 +1029,26 @@ export default function App() {
         className="shine-btn glow-btn"
         style={{
           position: "fixed",
-          bottom: 28,
-          right: 28,
+          bottom: isMobile ? 16 : 28,
+          right: isMobile ? 16 : 28,
           background: "var(--accent)",
           color: "#fff",
           border: "none",
           borderRadius: 50,
-          padding: "14px 22px",
+          padding: isMobile ? "12px 18px" : "14px 22px",
           fontWeight: 700,
-          fontSize: 14,
+          fontSize: isMobile ? 13 : 14,
           cursor: "pointer",
           boxShadow: "0 4px 20px rgba(224,124,46,0.4)",
           display: "flex",
           alignItems: "center",
-          gap: 8,
+          gap: 6,
           zIndex: 200,
           overflow: "hidden",
           textDecoration: "none",
         }}
       >
-        ☕ Buy me a coffee
+        {isMobile ? "☕" : "☕ Buy me a coffee"}
       </a>
     </div>
   );
