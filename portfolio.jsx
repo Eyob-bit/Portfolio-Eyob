@@ -113,7 +113,7 @@ function Circle({ size = 80, filled = true, style = {} }) {
 }
 
 // --- Navbar ---
-function Navbar({ dark, toggleDark }) {
+function Navbar({ dark, toggleDark, isMobile }) {
   return (
     <nav
       style={{
@@ -125,7 +125,7 @@ function Navbar({ dark, toggleDark }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 40px",
+        padding: isMobile ? "0 12px" : "0 40px",
         height: 64,
         background: "var(--bg)",
         borderBottom: "1px solid var(--border)",
@@ -225,7 +225,7 @@ function Navbar({ dark, toggleDark }) {
 }
 
 // --- Hero Section ---
-function Hero() {
+function Hero({ isMobile }) {
   return (
     <section
       id="home"
@@ -234,7 +234,7 @@ function Hero() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "80px 80px 40px",
+        padding: isMobile ? "100px 20px 40px" : "80px 80px 40px",
         position: "relative",
         overflow: "hidden",
       }}
@@ -249,7 +249,7 @@ function Hero() {
         <Circle size={110} filled />
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 1100, width: "100%", gap: 32 }}>
+      <div style={{ display: "flex", flexDirection: isMobile ? "column-reverse" : "row", alignItems: "center", justifyContent: "space-between", maxWidth: 1100, width: "100%", gap: 32 }}>
         <div style={{ flex: 1 }}>
           <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 16 }}>
             Welcome to my Portfolio
@@ -380,14 +380,14 @@ function Hero() {
 }
 
 // --- About Section ---
-function About() {
+function About({ isMobile }) {
   const stats = [
     { value: "2+", label: "Years Experience" },
     { value: "5+", label: "Projects Done" },
     { value: "Soon", label: "Happy Clients" },
   ];
   return (
-    <section id="about" style={{ padding: "100px 80px", background: "var(--section-alt)" }}>
+    <section id="about" style={{ padding: isMobile ? "80px 20px" : "100px 80px", background: "var(--section-alt)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         <div style={{ flex: 1 }}>
           <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>About Me</p>
@@ -445,18 +445,18 @@ function About() {
 }
 
 // --- Services Section ---
-function Services() {
+function Services({ isMobile }) {
   const services = [
     { icon: "🌐", title: "Web Applications", desc: "I build complete web applications from scratch, combining interactive React front-ends with powerful Node.js/Laravel back-ends." },
     { icon: "💾", title: "Database Optimization", desc: "I structure clean, secure databases that safeguard user information and keep your application running fast under heavy traffic." },
     { icon: "🔌", title: "API Integration", desc: "Seamless third-party integrations, REST APIs, and microservices architecture." },
   ];
   return (
-    <section id="services" style={{ padding: "100px 80px", background: "var(--section-alt)" }}>
+    <section id="services" style={{ padding: isMobile ? "80px 20px" : "100px 80px", background: "var(--section-alt)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>What I Offer</p>
         <h2 style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 56 }}>Services</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 24 }}>
           {services.map((s) => (
             <div
               key={s.title}
@@ -489,7 +489,7 @@ function Services() {
 }
 
 // --- Portfolio Section ---
-function Portfolio() {
+function Portfolio({ isMobile }) {
   const projects = [
   {
     title: "BeU Delivery - Food Delivery Platform",
@@ -513,7 +513,7 @@ function Portfolio() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ color: "var(--accent)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>My Work</p>
         <h2 style={{ fontSize: "clamp(32px, 4vw, 48px)", fontWeight: 800, color: "var(--text)", marginBottom: 56 }}>Portfolio</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 24 }}>
           {projects.map((p) => (
             <div
               key={p.title}
@@ -618,9 +618,9 @@ function Portfolio() {
 }
 
 // --- Contact Section (redesigned like screenshot) ---
-function Contact() {
+function Contact({ isMobile }) {
   return (
-    <section id="contact" style={{ padding: "100px 80px", background: "var(--section-alt)" }}>
+    <section id="contact" style={{ padding: isMobile ? "80px 20px" : "100px 80px", background: "var(--section-alt)" }}>
       <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
         <h2 style={{ fontSize: "clamp(36px, 5vw, 60px)", fontWeight: 800, color: "var(--text)", marginBottom: 16 }}>
           Let's Work Together
@@ -686,7 +686,7 @@ function Contact() {
 }
 
 // --- Footer ---
-function Footer() {
+function Footer({ isMobile }) {
   return (
     <footer
       style={{
@@ -717,6 +717,13 @@ function Footer() {
 // --- Main App ---
 export default function App() {
   const [dark, setDark] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     // Set favicon to profile photo
@@ -814,13 +821,13 @@ export default function App() {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
       `}</style>
-      <Navbar dark={dark} toggleDark={() => setDark(!dark)} />
-      <Hero />
-      <About />
-      <Services />
-      <Portfolio />
-      <Contact />
-      <Footer />
+      <Navbar dark={dark} isMobile={isMobile} toggleDark={() => setDark(!dark)} />
+      <Hero isMobile={isMobile} />
+      <About isMobile={isMobile} />
+      <Services isMobile={isMobile} />
+      <Portfolio isMobile={isMobile} />
+      <Contact isMobile={isMobile} />
+      <Footer isMobile={isMobile} />
       {/* Floating coffee button */}
       <a
         href="https://jami.bio/eyobed40/tip"
