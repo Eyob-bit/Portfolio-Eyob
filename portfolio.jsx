@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import me from "./images/me.jpg";
 import BeU from "./images/BeU.png";
 import AI_Image_Generator from "./images/AI-Image-Generator.png";
+import resume from "/Eyob_Behailu_CV1.pdf";
 
 const NAV_LINKS = ["Home", "About", "Services", "Portfolio", "Contact"];
 
@@ -212,7 +213,7 @@ function Navbar({ dark, toggleDark, isMobile }) {
           {/* Download CV — hide on mobile (shown in hero) */}
           {!isMobile && (
             <a
-              href="/Eyob_Behailu_CV1.pdf"
+              href={resume}
               download="Eyob_CV.pdf"
               className="glow-btn"
               style={{
@@ -453,7 +454,7 @@ function Hero({ isMobile }) {
               Let's Connect
             </a>
             <a
-              href="/Eyob_Behailu_CV1.pdf"
+              href={resume}
               download="Eyob_CV.pdf"
               className="glow-btn-outline"
               style={{
@@ -596,7 +597,7 @@ function About({ isMobile }) {
             I approach development with an analytical mindset, focusing on writing optimized code and creating efficient database structures that solve real-world problems.
           </p>
           <a
-            href="/Eyob_Behailu_CV1.pdf"
+            href={resume}
             download="Eyob_CV.pdf"
             className="glow-btn"
             style={{
